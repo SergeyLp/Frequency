@@ -73,7 +73,7 @@ class Main:
 			
 			if self.result:	
 				description = 'Frequency Dictionary'
-				style = xlwt.easyxf('font: name Times New Roman')			
+				style = xlwt.easyxf('font: name Verdana')			
 				wb = xlwt.Workbook()
 				ws = wb.add_sheet(description + ' ' + self.countWord)	
 				nRow = 0
