@@ -155,13 +155,9 @@ $RECYCLE.BIN/
 # Mac desktop service store files
 .DS_Store
 *.pyc
-Settings.ini
-Settings.ini
-Settings.ini
-Books/123455.txt
-Settings.ini
 *.txt
-Settings.ini
 *.xls
 _Bases/StarDict/*
 _Bases/WordNet/*
+_Bases/_Bak/*
+_Info/*

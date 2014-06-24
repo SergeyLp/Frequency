@@ -18,7 +18,6 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <Compile Include="Main.py" />
-    <Content Include="Books\123455.txt" />
     <Compile Include="Frequency\FrequencyDict.py" />
     <Compile Include="Frequency\IniParser.py" />
     <Compile Include="Frequency\__init__.py" />
@@ -36,12 +35,16 @@
     <Compile Include="WordNet\WordNetVerb.py" />
     <Compile Include="WordNet\__init__.py" />
     <Content Include="Settings.ini" />
+    <Content Include="_Bases\Books\Winnie.txt" />
+    <Content Include="_Bases\Frequency Dictionary.xls" />
+    <Content Include="_Bases\StopWord.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Books" />
     <Folder Include="Frequency" />
     <Folder Include="StarDict" />
     <Folder Include="WordNet" />
+    <Folder Include="_Bases\" />
+    <Folder Include="_Bases\Books\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />

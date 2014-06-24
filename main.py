@@ -24,6 +24,7 @@ class Main:
 			self.countWord = config.GetValue("CountWord") 	 				# Считываем из ini файла переменную CountWord, которая содержит количество первых слов частотного словаря, которые нужно получить
 			self.pathToWordNetDict = config.GetValue("PathToWordNetDict") 	# Считываем из ini файла переменную PathToWordNetDict, которая содержит путь до словаря WordNet
 			self.pathToStarDict = config.GetValue("PathToStarDict") 		# Считываем из ini файла переменную PathToStarDict, которая содержит путь до словарей в формате StarDict	
+			self.pathToStopWords = config.GetValue("PathToStopWords")
 			
 			# Отделяем пути словарей StarDict друг от друга и удаляем пробелы с начала и конца пути. Все пути заносим в список listPathToStarDict
 			listPathToStarDict = [item.strip() for item in self.pathToStarDict.split(";")]

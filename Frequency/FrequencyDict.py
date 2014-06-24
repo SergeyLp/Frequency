@@ -31,7 +31,16 @@ class FrequencyDict:
 
         # Создаем нормализатор английских слов
         self.lemmatizer = Lemmatizer(pathToWordNetDict)
-        
+
+        self.LoadStopWords()
+
+
+    def LoadStopWords(self):
+        fileName  = "_Bases/StopWord.txt"  
+        self.stopWords = set()
+        with open(fileName, 'rU') as file:
+          for line in file:
+            self.stopWords.add(line.rstrip())
 
         
     # Метод парсит файл, получает из нее слова
@@ -63,10 +72,11 @@ class FrequencyDict:
     def __FindWordsFromContent(self, content):
         result = self.wordPattern.findall(content) 	# В строке найдем список английских слов				
         for word in result:
-            word = word.lower()						# Приводим слово к нижнему регистру	
+            word = word.lower()						# Приводим слово к нижнему регистру
+            if word in self.stopWords: continue
             lemma = self.lemmatizer.GetLemma(word) 	# Нормализуем слово
             if (lemma != ""):
-                self.frequencyDict[lemma] += 1		# Добавляем в счетчик частотного словаря нормализованное слово
+                pass#self.frequencyDict[lemma] += 1		# Добавляем в счетчик частотного словаря нормализованное слово
             else:
                 self.frequencyDict[word] += 1		# Добавляем в счетчик частотного словаря не нормализованное слово	
                 #logging.debug(word)
