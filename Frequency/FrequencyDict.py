@@ -1,18 +1,17 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*- 
-
-
 import re
 import os
 import logging
 
 from collections import Counter
-
 from WordNet.Lemmatizer import Lemmatizer
 
 logging.basicConfig(level = logging.DEBUG)
-
-
+     
+class FrequencyDict:
+    def __init__(self, pathToWordNetDict):
+        
 # Простое слово, например "over", можно найти, используя выражение "([a-zA-Z]+)" - здесь ищется одна или более букв английского алфавита.
 # Составное слово, к примеру "commander-in-chief", найти несколько сложнее, нам нужно искать идущие друг за другом 
 # подвыражения вида "commander-", "in-", после которых идет слово "chief".
@@ -24,11 +23,6 @@ logging.basicConfig(level = logging.DEBUG)
 # Для этого заменим в первом подвыражении "-?" на "[-']?".
 # Все, на этом закончим улучшения регулярного выражения, его можно было бы улучшать и дальше, но остановимся на таком: 
 # "((?:[a-zA-Z]+[-']?)*[a-zA-Z]+)"
-        
-        
-class FrequencyDict:
-    def __init__(self, pathToWordNetDict):
-        
         # Определяем регулярное выражение для поиска английских слов
         self.wordPattern = re.compile("((?:[a-zA-Z]+[-']?)*[a-zA-Z]+)")
         
