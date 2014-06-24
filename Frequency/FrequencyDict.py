@@ -74,11 +74,11 @@ class FrequencyDict:
         for word in result:
             word = word.lower()						# Приводим слово к нижнему регистру
             if word in self.stopWords: continue
-            lemma = self.lemmatizer.GetLemma(word) 	# Нормализуем слово
-            if (lemma != ""):
-                pass#self.frequencyDict[lemma] += 1		# Добавляем в счетчик частотного словаря нормализованное слово
-            else:
-                self.frequencyDict[word] += 1		# Добавляем в счетчик частотного словаря не нормализованное слово	
+            #lemma = self.lemmatizer.GetLemma(word) 	# Нормализуем слово
+            #if (lemma != ""):
+                #pass#self.frequencyDict[lemma] += 1		# Добавляем в счетчик частотного словаря нормализованное слово
+            #else:
+            self.frequencyDict[word] += 1		# Добавляем в счетчик частотного словаря не нормализованное слово	
                 #logging.debug(word)
     
     
