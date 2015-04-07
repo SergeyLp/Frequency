@@ -86,7 +86,7 @@ class Main:
                 for item in self.result:
                     ws.write(nRow, 0, item[0], style)
                     ws.write(nRow, 1, item[1], style)
-                    ##ws.write(nRow, 2, item[2], style)
+                    ws.write(nRow, 2, item[2], style)
                     nRow +=1
                     if nRow < 15: print (item[0],item[1])##,item[2])
                 wb.save(os.path.join(self.pathResult, description +'.xls'))
