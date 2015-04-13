@@ -40,7 +40,7 @@ class FrequencyDict:
         self.stopWords = set()
         with open(fileName, 'rU') as file:
           for line in file:
-            self.stopWords.add(line.rstrip())
+            self.stopWords.add(line.strip())
 
         
     # Метод парсит файл, получает из нее слова

@@ -60,7 +60,8 @@ class Main:
             raise Exception('Path "%s" does not exists' % path)		
 
         
-    # Метод бежит по всем словарям, и возвращает перевод из ближайшего словаря. Если перевода нет ни в одном из словарей, возвращается пустая строка	
+    # Метод бежит по всем словарям, и возвращает перевод из ближайшего словаря.
+    # Если перевода нет ни в одном из словарей, возвращается пустая строка	
     def __GetTranslate(self, word):
         valueWord = ""
         for dict in self.listLanguageDict:
@@ -71,14 +72,15 @@ class Main:
         
         
         
-    # Метод сохраняет результат(само слово, частота, его перевод) по первым countWord словам в файл формата Excel  	
+    # Метод сохраняет результат
+    # (само слово, частота, его перевод) по первым countWord словам в файл формата Excel  	
     def __SaveResultToExcel(self):	
         try:
             if not os.path.exists(self.pathResult):
                 raise Exception('No such directory: "%s"' %self.pathResult)	
             
             if self.result:	
-                description = 'Frequency Dictionary2'
+                description = 'Frequency Dictionary'
                 style = xlwt.easyxf('font: name Verdana')			
                 wb = xlwt.Workbook()
                 ws = wb.add_sheet(description + ' ' + self.countWord)	
@@ -88,7 +90,7 @@ class Main:
                     ws.write(nRow, 1, item[1], style)
                     ws.write(nRow, 2, item[2], style)
                     nRow +=1
-                    if nRow < 15: print (item[0],item[1])##,item[2])
+                    if nRow < 35: print (item[0],item[1])##,item[2])
                 wb.save(os.path.join(self.pathResult, description +'.xls'))
         except Exception as e:
             print(e)			
