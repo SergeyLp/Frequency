@@ -36,7 +36,7 @@ class FrequencyDict:
 
 
     def LoadStopWords(self):
-        fileName  = "_Bases/StopWord.txt"  
+        fileName  = r"D:\Win7\lis\Documents\Dev\_DataMining\_Text\Meta\StopWord.txt"
         self.stopWords = set()
         with open(fileName, 'rU') as file:
           for line in file:
@@ -56,7 +56,7 @@ class FrequencyDict:
     # Метод парсит файл в формате txt
     def __ParseTxtFile(self, txtFile, contentHandler):
         try:
-            with open(txtFile, 'rU') as file:		
+            with open(txtFile, 'r', encoding='UTF-8') as file:
                 for line in file:			# Читаем файл построчно
                     contentHandler(line)	# Для каждой строки вызываем обработчик контента
         except Exception as e:
@@ -90,6 +90,5 @@ class FrequencyDict:
         dict.sort(key=lambda t: t[1], reverse = True)
         return dict[0 : int(countWord)]
 
-        
         
         

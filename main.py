@@ -1,7 +1,4 @@
-﻿# -*- coding: utf-8 -*- 
-
-import os
-import xlwt3 as xlwt
+﻿import os
 
 from Frequency.IniParser import IniParser
 from Frequency.FrequencyDict import FrequencyDict
@@ -95,8 +92,18 @@ class Main:
         except Exception as e:
             print(e)			
     
-    
-    
+    def __PrintResult(self):
+            if self.result:
+                description = 'Frequency Dictionary'
+                nRow = 0
+                for item in self.result:
+                    print(item)
+                    ##ws.write(nRow, 0, item[0], style)
+                    ##ws.write(nRow, 1, item[1], style)
+                    ##ws.write(nRow, 2, item[2], style)
+                    nRow += 1
+                    ##if nRow < 35: print(item[0], item[1])  ##,item[2])
+
     # Метод запускает задачу на выполнение
     def __Run(self):					
         # Отдаем частотному словарю по одной книге	
@@ -114,7 +121,7 @@ class Main:
             self.result.append([counterWord, word, valueWord])	
 
         # Запишем результат в файл формата Excel 
-        self.__SaveResultToExcel()		
+        self.__PrintResult()
 
         
         
