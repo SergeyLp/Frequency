@@ -91,16 +91,21 @@ class Main:
                 wb.save(os.path.join(self.pathResult, description +'.xls'))
         except Exception as e:
             print(e)			
-    
+
+
     def __PrintResult(self):
-            if self.result:
+        import html
+        if self.result:
                 description = 'Frequency Dictionary'
                 nRow = 0
                 for item in self.result:
-                    print(item)
-                    ##ws.write(nRow, 0, item[0], style)
-                    ##ws.write(nRow, 1, item[1], style)
-                    ##ws.write(nRow, 2, item[2], style)
+                    if 9 > nRow >= 0:
+                        if item[2]:
+                            print('\t', item[0], item[1], html.unescape(item[2]))
+                        else:
+                            print('\t', item[0], item[1])
+                    else:
+                        print(item[1])
                     nRow += 1
                     ##if nRow < 35: print(item[0], item[1])  ##,item[2])
 

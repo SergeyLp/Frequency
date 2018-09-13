@@ -24,7 +24,7 @@ class FrequencyDict:
 # Все, на этом закончим улучшения регулярного выражения, его можно было бы улучшать и дальше, но остановимся на таком: 
 # "((?:[a-zA-Z]+[-']?)*[a-zA-Z]+)"
         # Определяем регулярное выражение для поиска английских слов
-        self.wordPattern = re.compile("((?:[a-zA-Z]+[-']?)*[a-zA-Z]+)")
+        self.wordPattern = re.compile("((?:[a-zA-Z]+[-'’]?)*[a-zA-Z]+)")
         
         # Частотный словарь(использум класс collections.Counter для поддержки подсчёта уникальных элементов в последовательностях) 		
         self.frequencyDict = Counter()
@@ -47,41 +47,46 @@ class FrequencyDict:
     def ParseBook(self, file):
         if file.endswith(".txt") or  file.endswith(".srt"): 
             self.__ParseTxtFile(file, self.__FindWordsFromContent)
-        elif file.endswith(".pdf"):
-            self.__ParsePdfFile(file, self.__FindWordsFromContent)					
-        else:
-            print('Warning: The file format is not supported: "%s"' %file)
-            
+
+    # def generate_words_list(self, file):
+
+
             
     # Метод парсит файл в формате txt
     def __ParseTxtFile(self, txtFile, contentHandler):
-        try:
+        # try:
             with open(txtFile, 'r', encoding='UTF-8') as file:
-                for line in file:			# Читаем файл построчно
-                    contentHandler(line)	# Для каждой строки вызываем обработчик контента
-        except Exception as e:
-            print('Error parsing "%s"' % txtFile, e)	
+                text = file.read()
+                contentHandler(text)
+                # for line in file:			# Читаем файл построчно
+                #     contentHandler(line)	# Для каждой строки вызываем обработчик контента
+        # except Exception as e:
+        #     print('Error parsing "%s"' % txtFile, e)
             
-            
-    # Метод парсит файл в формате pdf
-    def __ParsePdfFile(self, pdfFile, contentHandler):
-        pass # пока не реализовано...
-                        
 
-    # Метод находит в строке слова согласно своим правилам, нормализует их и затем добавляет в частотный словарь
+    ## Метод находит в строке слова согласно своим правилам, нормализует их и затем добавляет в частотный словарь
     def __FindWordsFromContent(self, content):
-        result = self.wordPattern.findall(content) 	# В строке найдем список английских слов				
-        for word in result:
-            word = word.lower()						# Приводим слово к нижнему регистру
-            if word in self.stopWords: continue
+        list_words = self.wordPattern.findall(content) 	# В строке найдем список английских слов
+        set_words = set(list_words)
+        for word in list_words:
             #lemma = self.lemmatizer.GetLemma(word) 	# Нормализуем слово
             #if (lemma != ""):
                 #pass#self.frequencyDict[lemma] += 1		# Добавляем в счетчик частотного словаря нормализованное слово
             #else:
-            self.frequencyDict[word] += 1		# Добавляем в счетчик частотного словаря не нормализованное слово	
+            # if word == 'He':
+            #     isCapital = not word[0].islower()
+            #     lowered = word.lower()
+            #     inLowSet = lowered in set_words
+            #     inSet = word in set_words
+            #     if (not inLowSet) or (not inSet):
+            #         print(word, isCapital, lowered, inLowSet, inSet)
+            if not (word[0].islower()) and (word.lower() in set_words):
+                word = word.lower()
+
+            if word in self.stopWords: continue
+            self.frequencyDict[word] += 1		# Добавляем в счетчик частотного словаря не нормализованное слово
                 #logging.debug(word)
-    
-    
+
     
     # Метод отдает первые countWord слов частотного словаря, отсортированные по ключу и значению
     def FindMostCommonElements(self, countWord):
