@@ -5,6 +5,7 @@ from Frequency.FrequencyDict import FrequencyDict
 from StarDict.StarDict import StarDict
 
 ConfigFileName="Settings.ini"
+TRACE = 1
 
 class Main:
     def __init__(self):
@@ -14,39 +15,39 @@ class Main:
 
         try:
             # Создаем и инициализируем конфиг-парсер
-            print('Setup...')
+            if TRACE > 1: print('Setup...')
             config = IniParser(ConfigFileName)	
 
-            self.pathToBooks = config.GetValue("PathToBooks") 	 			# Считываем из ini файла переменную PathToBooks, которая содержит  путь до файлов(книг, документов и тд), из которых будут браться слова		
-            self.pathResult = config.GetValue("PathToResult") 				# Считываем из ini файла переменную PathToResult, которая содержит путь для сохранения результата
-            self.countWord = config.GetValue("CountWord") 	 				# Считываем из ini файла переменную CountWord, которая содержит количество первых слов частотного словаря, которые нужно получить
-            self.pathToWordNetDict = config.GetValue("PathToWordNetDict") 	# Считываем из ini файла переменную PathToWordNetDict, которая содержит путь до словаря WordNet
-            self.pathToStarDict = config.GetValue("PathToStarDict") 		# Считываем из ini файла переменную PathToStarDict, которая содержит путь до словарей в формате StarDict	
+            self.pathToBooks = config.GetValue("PathToBooks") 	 			# путь до файлов(книг, документов и тд), из которых будут браться слова
+            self.pathResult = config.GetValue("PathToResult") 				# путь для сохранения результата
+            self.countWord = config.GetValue("CountWord") 	 				# количество первых слов частотного словаря, которые нужно получить
+            self.pathToWordNetDict = config.GetValue("PathToWordNetDict") 	# путь до словаря WordNet
+            self.pathToStarDict = config.GetValue("PathToStarDict") 		# путь до словарей в формате StarDict
             self.pathToStopWords = config.GetValue("PathToStopWords")
             
             # Отделяем пути словарей StarDict друг от друга и удаляем пробелы с начала и конца пути. Все пути заносим в список listPathToStarDict
-            listPathToStarDict = [item.strip() for item in self.pathToStarDict.split(";")]
+            listPathToStarDict = [item.strip(' \\') for item in self.pathToStarDict.split(";")]
 
             # Для каждого из путей до словарей StarDict создаем свой языковый словарь
-            print('Prepare dict...')
+            if TRACE > 1: print('Prepare dict...')
             for path in listPathToStarDict:
                 languageDict = StarDict(path)
                 self.listLanguageDict.append(languageDict) 
             
             # Получаем список книг, из которых будем получать слова
-            print('Get source list...')
+            if TRACE > 1: print('Get source list...')
             self.listBooks = self.__GetAllFiles(self.pathToBooks)
 
             # Создаем частотный словарь		
-            print('Create freq...')
-            self.frequencyDict = FrequencyDict(self.pathToWordNetDict)			
+            if TRACE > 1: print('Create freq...')
+            self.frequencyDict = FrequencyDict(self.pathToWordNetDict, self.pathToStopWords)
     
             # Подготовка закончена, загружены словари StarDict и WordNet. Запускаем задачу на выполнение, то есть начинаем парсить текстовые файл, нормализовывать и считать слова			
-            print('Run...')
+            if TRACE > 1: print('Run...')
             self.__Run()
         
         except Exception as e:
-            print('Error: "%s"' %e)
+            print('Main class error: "%s"' %e)
 
 
     # Метод создает список файлов, расположенных в папке path	
@@ -63,7 +64,7 @@ class Main:
         valueWord = ""
         for dict in self.listLanguageDict:
             valueWord = dict.Translate(word)
-            if valueWord != "":
+            if valueWord:## != "":
                 return valueWord
         return valueWord
         
@@ -99,7 +100,7 @@ class Main:
                 description = 'Frequency Dictionary'
                 nRow = 0
                 for item in self.result:
-                    if 9 > nRow >= 0:
+                    if 11 > nRow >= 0:
                         if item[2]:
                             print('\t', item[0], item[1], html.unescape(item[2]))
                         else:
@@ -115,9 +116,11 @@ class Main:
         for book in self.listBooks:
             self.frequencyDict.ParseBook(book)		
             
+        print('Counting...')
         # Получаем первые countWord слов из всего получившегося списка английских слов			
         mostCommonElements = self.frequencyDict.FindMostCommonElements(self.countWord)
         
+        print('Translating...')
         # Получаем переводы для всех слов
         for item in mostCommonElements:
             word = item[0]
@@ -125,7 +128,6 @@ class Main:
             valueWord = self.__GetTranslate(word)
             self.result.append([counterWord, word, valueWord])	
 
-        # Запишем результат в файл формата Excel 
         self.__PrintResult()
 
         
