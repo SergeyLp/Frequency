@@ -97,14 +97,10 @@ class Main:
     def __PrintResult(self):
         import html
         if self.result:
-                description = 'Frequency Dictionary'
                 nRow = 0
                 for item in self.result:
-                    if 11 > nRow >= 0:
-                        if item[2]:
-                            print('\t', item[0], item[1], html.unescape(item[2]))
-                        else:
-                            print('\t', item[0], item[1])
+                    if 110 > nRow:
+                        print(f"{item[0]:5} {item[1]:11} {html.unescape(item[2]) if item[2]  else ''}")
                     else:
                         print(item[1])
                     nRow += 1
