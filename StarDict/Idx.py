@@ -29,6 +29,7 @@ class Idx(BaseStarDictItem):
         
         # Заполняем словарь self.idxDict данными из файла .idx
         self.__FillIdxDict()
+        print("I'm" in self.idxDict)
     
         # Проверяем целостность словаря (информация в .ifo файле о количестве слов [wordcount] должна совпадать с реальным количеством записей в .idx файле)
         self.__CheckRealWordCount()
@@ -66,7 +67,6 @@ class Idx(BaseStarDictItem):
     # Функция разделяет файл .idx на отдельные записи (запись состоит из 3-х полей) и каждую запись добавляет в словарь self.idxDict
     def __FillIdxDict(self):
         languageBytes = bytearray()
-        #languageBytes = ''
         with open(self.dictionaryFile, 'rb') as stream:
             while True:
                 byte = stream.read(1) 	# Читаем один байт
@@ -79,7 +79,8 @@ class Idx(BaseStarDictItem):
                     wordDataOffset = self.__getIntFromByteArray(self.idxOffsetBytes, stream) 	# Получили первое число "Смещение до записи в файле dict"
                     wordDataSize = self.__getIntFromByteArray(4, stream)						# Получили второе число "Размер всей записи в файле dict"
 
-                    self.idxDict[languageBytes.decode("utf-8")] = [wordDataOffset, wordDataSize] # Добавим в словарь self.idxDict запись: иностранное слово + смещение + размер данных
+                    s = languageBytes.decode('utf-8')
+                    self.idxDict[s] = [wordDataOffset, wordDataSize] # Добавим в словарь self.idxDict запись: иностранное слово + смещение + размер данных
                     languageBytes = b'' 											# Обнуляем переменную, поскольку начинается следующая струтура
             
 
@@ -91,5 +92,4 @@ class Idx(BaseStarDictItem):
             return self.idxDict[word]		
         except KeyError:
             return [None, None]	
-            
             

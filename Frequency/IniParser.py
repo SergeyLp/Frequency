@@ -1,8 +1,4 @@
-﻿#!/usr/local/bin/python3
-# -*- coding: utf-8 -*- 
-
-
-import re
+﻿import re
 
 class IniParser:
 	def __init__(self, file):
@@ -28,7 +24,7 @@ class IniParser:
 		
 	def __ReadFileAsListLine(self, file):	
 		try:
-			with open(file, 'r') as file: 
+			with open(file, 'r', encoding='utf-8') as file:
 				return file.readlines()
 				
 		except Exception as e:

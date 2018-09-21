@@ -1,7 +1,4 @@
-﻿# -*- coding: utf-8 -*- 
-
-
-import os
+﻿import os
 
 class BaseStarDictItem:
 	def __init__(self, pathToDict, exp):
@@ -30,5 +27,4 @@ class BaseStarDictItem:
 			raise Exception('File does not exist: "*.%s"' % exp)	
 		
 	
-			
 			

@@ -1,7 +1,4 @@
-﻿# -*- coding: utf-8 -*- 
-
-
-from StarDict.Ifo import Ifo
+﻿from StarDict.Ifo import Ifo
 from StarDict.Idx import Idx
 from StarDict.Dict import Dict
 
@@ -11,7 +8,6 @@ class StarDict:
 		try:
 			# Формат словаря DICT предусматривает 3 обязательных файла (.ifo, .idx, .dict) и 1 необязательный (.syn)
 			# Если хотя бы один из обязательных словарей отсутствует, вызовется исключение и словарь не будет загружен
-			
 			# Создаем объект Ifo (он содержит настройки и мета-информацию о словаре) [Обязательный файл]
 			self.Ifo = Ifo(pathToDict)
 
@@ -19,7 +15,7 @@ class StarDict:
 			self.Idx = Idx(pathToDict, self.Ifo.wordCount, self.Ifo.idxFileSize, self.Ifo.idxOffsetBits)
 	
 			# Создаем объект Dict (он содержит текстовую информацией (сами слова, транскрипцию, значение), дополненную различными медиа-файлами и разметками других словарных форматов) [Обязательный файл]
-			self.Dict = Dict(pathToDict, self.Ifo.sameTypeSequence)
+			self.Dict = Dict(pathToDict)#, self.Ifo.sameTypeSequence)
 
 			# Создаем объект Syn (он содержит информацию о синонимах) [Необязательный файл]
 			# self.Syn = Syn(pathToDict)
@@ -31,8 +27,10 @@ class StarDict:
 	def Translate(self, word):
 		
 		# Приводим слово к нижнему регистру и убираем пробелы с начала и конца
-		word = word.lower().strip() 
-		
+
+		# word =  word.lower().strip()
+		word =  word.strip()
+
 		# Получаем у объекта Idx координаты расположения слова внутри файла .dict
 		wordDataOffset, wordDataSize  = self.Idx.GetLocationWord(word)
 		
@@ -41,9 +39,3 @@ class StarDict:
 			
 		# Получаем у объекта Dict сам перевод и возвращаем его		 
 		return self.Dict.GetTranslation(wordDataOffset, wordDataSize)
-
-
-	
-	
-			
-			

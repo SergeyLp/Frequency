@@ -59,14 +59,15 @@ class Main:
 
         
     # Метод бежит по всем словарям, и возвращает перевод из ближайшего словаря.
-    # Если перевода нет ни в одном из словарей, возвращается пустая строка	
-    def __GetTranslate(self, word):
-        valueWord = ""
+    # Если перевода нет ни в одном из словарей, возвращается None
+    def __GetTranslate(self, word: str)-> str:
         for dict in self.listLanguageDict:
             valueWord = dict.Translate(word)
-            if valueWord:## != "":
+            if valueWord:
                 return valueWord
-        return valueWord
+        else:
+            return None
+
         
         
         
@@ -100,7 +101,7 @@ class Main:
                 nRow = 0
                 for item in self.result:
                     if 110 > nRow:
-                        print(f"{item[0]:5} {item[1]:11} {html.unescape(item[2]) if item[2]  else ''}")
+                        print(f"{item[0]:5} {item[1]:11} {html.unescape(item[2]) if item[2]  else '~-~'}")
                     else:
                         print(item[1])
                     nRow += 1
@@ -111,12 +112,12 @@ class Main:
         # Отдаем частотному словарю по одной книге	
         for book in self.listBooks:
             self.frequencyDict.ParseBook(book)		
-            
-        print('Counting...')
+
+        if TRACE > 1: print('Counting...')
         # Получаем первые countWord слов из всего получившегося списка английских слов			
         mostCommonElements = self.frequencyDict.FindMostCommonElements(self.countWord)
-        
-        print('Translating...')
+
+        if TRACE > 1: print('Translating...')
         # Получаем переводы для всех слов
         for item in mostCommonElements:
             word = item[0]

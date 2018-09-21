@@ -35,7 +35,6 @@ class FrequencyDict:
 
 
     def LoadStopWords(self, pathToStopWords):
-        print('Loading stopwords...')
         self.stopWords = set()
         with open(pathToStopWords, 'rU') as file:
           for line in file:
@@ -66,6 +65,7 @@ class FrequencyDict:
         list_words = self.wordPattern.findall(content) 	# В строке найдем список английских слов
         set_words = set(list_words)
         for word in list_words:
+            word = word.replace("’", "'")
             if word == 'I': continue
             if not (word[0].islower()) and (word.lower() in set_words):
                 word = word.lower()
