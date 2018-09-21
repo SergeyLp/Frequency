@@ -3,6 +3,7 @@
 from Frequency.IniParser import IniParser
 from Frequency.FrequencyDict import FrequencyDict
 from StarDict.StarDict import StarDict
+from WordNet.Lemmatizer import Lemmatizer
 
 ConfigFileName="Settings.ini"
 TRACE = 1
@@ -41,13 +42,16 @@ class Main:
             # Создаем частотный словарь		
             if TRACE > 1: print('Create freq...')
             self.frequencyDict = FrequencyDict(self.pathToWordNetDict, self.pathToStopWords)
-    
+
+            # Создаем нормализатор английских слов
+            self.lemmatizer = Lemmatizer(self.pathToWordNetDict)
+
             # Подготовка закончена, загружены словари StarDict и WordNet. Запускаем задачу на выполнение, то есть начинаем парсить текстовые файл, нормализовывать и считать слова			
             if TRACE > 1: print('Run...')
             self.__Run()
         
         except Exception as e:
-            print('Main class error: "%s"' %e)
+            print('In main class exception: "%s"' %e)
 
 
     # Метод создает список файлов, расположенных в папке path	
@@ -65,11 +69,14 @@ class Main:
             valueWord = dict.Translate(word)
             if valueWord:
                 return valueWord
+        low = word.lower()
+        for dict in self.listLanguageDict:
+            valueWord = dict.Translate(low)
+            if valueWord:
+                return valueWord
         else:
-            return None
+            return self.lemmatizer.GetLemma(word) 	# Нормализуем слово
 
-        
-        
         
     # Метод сохраняет результат
     # (само слово, частота, его перевод) по первым countWord словам в файл формата Excel  	
@@ -101,7 +108,7 @@ class Main:
                 nRow = 0
                 for item in self.result:
                     if 110 > nRow:
-                        print(f"{item[0]:5} {item[1]:11} {html.unescape(item[2]) if item[2]  else '~-~'}")
+                        print(f"{item[0]:5} {item[1]:11} {html.unescape(item[2]) if item[2]  else ''}")
                     else:
                         print(item[1])
                     nRow += 1

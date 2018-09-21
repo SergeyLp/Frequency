@@ -1,4 +1,3 @@
-#!/usr/local/bin/python3
 import re
 import os
 import logging
@@ -28,8 +27,6 @@ class FrequencyDict:
         # Частотный словарь(использум класс collections.Counter для поддержки подсчёта уникальных элементов в последовательностях) 		
         self.frequencyDict = Counter()
 
-        # Создаем нормализатор английских слов
-        self.lemmatizer = Lemmatizer(pathToWordNetDict)
 
         self.LoadStopWords(pathToStopWords)
 

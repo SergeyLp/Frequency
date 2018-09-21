@@ -29,8 +29,7 @@ class Idx(BaseStarDictItem):
         
         # Заполняем словарь self.idxDict данными из файла .idx
         self.__FillIdxDict()
-        print("I'm" in self.idxDict)
-    
+
         # Проверяем целостность словаря (информация в .ifo файле о количестве слов [wordcount] должна совпадать с реальным количеством записей в .idx файле)
         self.__CheckRealWordCount()
     
