@@ -6,7 +6,7 @@ from StarDict.StarDict import StarDict
 from WordNet.Lemmatizer import Lemmatizer
 
 ConfigFileName="Settings.ini"
-TRACE = 1
+TRACE = 2
 
 class Main:
     def __init__(self):
@@ -103,6 +103,7 @@ class Main:
 
 
     def __PrintResult(self):
+        if TRACE > 1: print('Result...')
         import html
         if self.result:
                 nRow = 0
