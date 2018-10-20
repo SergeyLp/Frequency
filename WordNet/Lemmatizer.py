@@ -26,7 +26,7 @@ class Lemmatizer:
         self.wordnet_lemmatizer = WordNetLemmatizer()
         self.lmtzr = nltk.WordNetLemmatizer().lemmatize
 
-    def get_wordnet_pos(treebank_tag):
+    def get_wordnet_pos(self, treebank_tag):
         if treebank_tag.startswith('J'):
             return wordnet.ADJ
         elif treebank_tag.startswith('V'):
@@ -36,25 +36,28 @@ class Lemmatizer:
         elif treebank_tag.startswith('R'):
             return wordnet.ADV
         else:
-            return wordnet.NOUN
+            return None
 
 
     # Метод возвращает лемму слова (возможно, составного)
-    def GetLemma(self, word):
+    def GetLemma(self, word_w_pos):
+        word = word_w_pos[0]
+        pos = word_w_pos[1]
         # Если в слове есть тире, разделим слово на части, нормализуем каждую часть(каждое слово) по отдельности, а потом соединим
         wordArr = word.split(self.splitter)
         resultWord = []
         for word in wordArr:
-            lemma = self.__GetLemmaWord(word)
+            lemma = self.__GetLemmaWord(word, pos)
             if (lemma != None):
                 resultWord.append(lemma)
-        if (resultWord != None):
-            return self.splitter.join(resultWord)
-        return None
 
-    def __GetLemmaWord(self, word:str)->str:
-        lemma = self.wordnet_lemmatizer.lemmatize(word)
-        return lemma if lemma != word else self.__GetLemmaWord2(word)
+        return self.splitter.join(resultWord) if resultWord != None else None
+
+    def __GetLemmaWord(self, word, pos)->str:
+        wn_pos = self.get_wordnet_pos(pos)
+        # print(word, wn_pos)
+        lemma = self.wordnet_lemmatizer.lemmatize(word, wn_pos)
+        return lemma #if lemma != word else self.__GetLemmaWord2(word)
 
     # Метод возвращает лемму(нормализованную форму слова)
     def __GetLemmaWord2(self, word):

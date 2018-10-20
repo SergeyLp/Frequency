@@ -1,43 +1,49 @@
-﻿# -*- coding: utf-8 -*- 
-
-
-from struct import unpack
+﻿from struct import unpack
 from StarDict.BaseStarDictItem import BaseStarDictItem
-
+import pickle, os
 
 # Каждая запись внутри .idx файла состоит из 3-х полей, идущих друг за другом
 # word_str;  		// Строка в формате utf-8, заканчивающаяся '\0'
 # word_data_offset; // Смещение до записи в файле .dict (размер числа 32 или 64 бита)
 # word_data_size;  	// Размер всей записи в файле .dict
-        
 
 class Idx(BaseStarDictItem):
 
-    # Конструктор
     def __init__(self, pathToDict, wordCount, idxFileSize, idxOffsetBits):
 
-        # Конструктор родителя (BaseStarDictItem)
-        BaseStarDictItem.__init__(self, pathToDict, 'idx')
-        
-        self.idxDict = {}							# Словарь, self.idxDict = {'иностр.слово': [Смещение_до_записи_в_файле_dict, Размер_всей_записи_в_файле_dict], ...}	
-        self.idxFileSize = int(idxFileSize) 		# Размер файла .idx, записанный в .ifo файле
-        self.idxOffsetBytes = int(idxOffsetBits/8)	# Размер числа, содержащего внутри себя смещение до записи в файле .dict. Переводим в байты и приводим к числу
-        self.wordCount = int(wordCount)				# Количество слов в ".idx" файле
-        
-        # Проверяем целостность словаря (информация в .ifo файле о размере .idx файла [idxfilesize] должна совпадать с его реальным размером)
-        self.__CheckRealFileSize()
-        
-        # Заполняем словарь self.idxDict данными из файла .idx
-        self.__FillIdxDict()
+        try:
+            list_f = [f for f in os.listdir(pathToDict) if f.endswith('pickle')]
+            f = os.path.join(pathToDict, list_f[0])  # Возвращаем первый попавшийся
 
-        # Проверяем целостность словаря (информация в .ifo файле о количестве слов [wordcount] должна совпадать с реальным количеством записей в .idx файле)
-        self.__CheckRealWordCount()
-    
+            with open(f, 'rb') as f:
+                self.idxDict = pickle.load(f)
+
+        except:
+            # Конструктор родителя (BaseStarDictItem)
+            BaseStarDictItem.__init__(self, pathToDict, 'idx')
+
+            self.idxDict = {}							# Словарь, self.idxDict = {'иностр.слово': [Смещение_до_записи_в_файле_dict, Размер_всей_записи_в_файле_dict], ...}
+            self.idxFileSize = int(idxFileSize) 		# Размер файла .idx, записанный в .ifo файле
+            self.idxOffsetBytes = int(idxOffsetBits/8)	# Размер числа, содержащего внутри себя смещение до записи в файле .dict. Переводим в байты и приводим к числу
+            self.wordCount = int(wordCount)				# Количество слов в ".idx" файле
+
+            # Проверяем целостность словаря (информация в .ifo файле о размере .idx файла [idxfilesize] должна совпадать с его реальным размером)
+            self.__CheckRealFileSize()
+
+            # Заполняем словарь self.idxDict данными из файла .idx
+            self.__FillIdxDict()
+
+            # Проверяем целостность словаря (информация в .ifo файле о количестве слов [wordcount] должна совпадать с реальным количеством записей в .idx файле)
+            self.__CheckRealWordCount()
+
+            with open(self.dictionaryFile+'.pickle', 'wb') as f:
+                pickle.dump(self.idxDict, f)
+
     
     # Функция сверяет размер файла, записанный в .ifo файле, с ее реальным размером и в случае расхождений генерирует исключение	
     def __CheckRealFileSize(self):
         if self.realFileSize != self.idxFileSize:
-            raise Exception('size of the "%s" is incorrect' %self.dictionaryFile)
+            raise Exception('CheckRealFileSize failed! Size of the "%s" is incorrect' %self.dictionaryFile)
 
             
     # Функция сверяет количестве слов, записанное в .ifo файле, с реальным количеством записей в файле .idx и в случае расхождений генерирует исключение			
@@ -64,6 +70,7 @@ class Idx(BaseStarDictItem):
         
 
     # Функция разделяет файл .idx на отдельные записи (запись состоит из 3-х полей) и каждую запись добавляет в словарь self.idxDict
+
     def __FillIdxDict(self):
         languageBytes = bytearray()
         with open(self.dictionaryFile, 'rb') as stream:
@@ -72,16 +79,16 @@ class Idx(BaseStarDictItem):
                 if not byte: break  	# Если байтов больше нет, то выходим из цикла
                 if byte != b'\0':		# Если байт не является символом окончания строки '\0', то прибавляем его к слову
                     languageBytes += byte#.decode("utf-8")
-                else: 
+                else:
                     # Если дошли до '\0', то считаем, что слово закончилось и дальше идут два числа ("Смещение до записи в файле dict" и "Размер всей записи в файле dict")
-
                     wordDataOffset = self.__getIntFromByteArray(self.idxOffsetBytes, stream) 	# Получили первое число "Смещение до записи в файле dict"
                     wordDataSize = self.__getIntFromByteArray(4, stream)						# Получили второе число "Размер всей записи в файле dict"
 
-                    s = languageBytes.decode('utf-8')
+                    s = languageBytes.decode(self.encoding) # 'utf-8'
                     self.idxDict[s] = [wordDataOffset, wordDataSize] # Добавим в словарь self.idxDict запись: иностранное слово + смещение + размер данных
                     languageBytes = b'' 											# Обнуляем переменную, поскольку начинается следующая струтура
-            
+
+
 
             
     # Функция возвращает расположение слова в файле .dict ("Смещение до записи в файле dict" и "Размер всей записи в файле dict").

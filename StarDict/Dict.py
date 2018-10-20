@@ -2,30 +2,25 @@
 import re
 
 class Dict(BaseStarDictItem):
-    def __init__(self, pathToDict):##, sameTypeSequence):
-
+    def __init__(self, pathToDict):
         # Конструктор родителя (BaseStarDictItem)
         BaseStarDictItem.__init__(self, pathToDict, 'dict')
         self.tag_re = re.compile(r'</?[a-z]*>')
-
-        # Маркер, определяющий форматирование словарной статьи
-        #self.sameTypeSequence = sameTypeSequence
 
     def GetTranslation(self, wordDataOffset, wordDataSize):
         try:
             # Убеждаемся что смещение и размер данных неотрицательны и находятся в пределах размера файла .dict
             self.__CheckValidArguments(wordDataOffset, wordDataSize)
 
-            # Открываем файл .dict как бинарный
             with open(self.dictionaryFile, 'rb') as file:
                 file.seek(wordDataOffset)
                 byteArray = file.read(wordDataSize)
                 article = byteArray.decode(self.encoding)  # (self.encoding определен в базовом классе BaseDictionaryItem)
 
-                pos = article.find('<k>')
-                if pos >= 0:
-                    pos = article.find('</k>', pos) + len('</k>')
-                    article = article[pos:].strip().replace('<tr>', '[').replace('</tr>', ']')
+                pos_k_tag = article.find('<k>')
+                if pos_k_tag >= 0:
+                    pos_k_tag = article.find('</k>', pos_k_tag) + len('</k>')
+                    article = article[pos_k_tag:].strip().replace('<tr>', '[').replace('</tr>', ']')
                     article = re.sub(self.tag_re, '', article)
                     article = article.replace('\n', ' ')
 

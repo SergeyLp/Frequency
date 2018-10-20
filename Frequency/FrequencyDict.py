@@ -71,6 +71,9 @@ class FrequencyDict:
         self.frequencyDict = Counter()
         self.LoadStopWords(pathToStopWords)
 
+        self.tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+
+
 
     def LoadStopWords(self, pathToStopWords):
         self.stopWords = set()
@@ -98,24 +101,33 @@ class FrequencyDict:
     ## Метод находит в строке слова согласно своим правилам, нормализует их и затем добавляет в частотный словарь
     def __FindWordsFromContent(self, content):
         # [wnl.lemmatize(i, j[0].lower()) if j[0].lower() in ['a', 'n', 'v'] else wnl.lemmatize(i) for i, j in pos_tag(word_tokenize(txt))]
-        tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-        sent_text = tokenizer.tokenize(content)
+        sent_text = self.tokenizer.tokenize(content)
+        list_words = []
         for sentence in sent_text:
-            tokenized_text = nltk.word_tokenize(sentence)
-            token_list=[]
-            for token in tokenized_text:
-                token=token.replace("’", "'")
-                token_list.append(token)
-            tagged = nltk.pos_tag(token_list)
-            #print(tagged)
+            # token_list = nltk.word_tokenize(sentence)
+            token_list = self.wordPattern.findall(sentence)
+            list_words.extend(token_list)
 
-        print(token_list[:10])
-        #print(sents[:3])
-
-        list_words = self.wordPattern.findall(content) 	# В строке найдем список английских слов
+        list_words = [tok.replace("’", "'") for tok in list_words]
         set_words = set(list_words)
+
+        tagged = nltk.pos_tag(list_words)
+        # print(tagged[:10])
+        for w_pos in tagged:
+            w = w_pos[0]
+            pos=w_pos[1]
+
+            if w == 'I': continue
+            if not (w[0].islower()) and (w.lower() in set_words):
+                w = w.lower()
+
+            if w in self.stopWords: continue
+
+            self.frequencyDict[w_pos] += 1
+
+        """
         for word in list_words:
-            word = word.replace("’", "'")
+            # word = word.replace("’", "'")
             if word == 'I': continue
             if not (word[0].islower()) and (word.lower() in set_words):
                 word = word.lower()
@@ -125,13 +137,15 @@ class FrequencyDict:
             #if (lemma != ""):
                 #pass#self.frequencyDict[lemma] += 1		# Добавляем в счетчик частотного словаря нормализованное слово
             #else:
-            self.frequencyDict[word] += 1		# Добавляем в счетчик частотного словаря не нормализованное слово
+            #self.frequencyDict[word] += 1		# Добавляем в счетчик частотного словаря не нормализованное слово
                 #logging.debug(word)
-
+        """
     
     # Метод отдает первые countWord слов частотного словаря, отсортированные по ключу и значению
     def FindMostCommonElements(self, countWord):
-        # dict = list(self.frequencyDict.items())
-        # dict.sort(key=lambda t: t[0])
-        # dict.sort(key=lambda t: t[1], reverse = True)
-        return self.frequencyDict.most_common(int(countWord))    # dict[0 : int(countWord)]
+        dict = list(self.frequencyDict.items())
+        dict.sort(key=lambda t: t[0])
+        dict.sort(key=lambda t: t[1], reverse = True)
+        return  dict[0 : int(countWord)]
+        # return self.frequencyDict.most_common(int(countWord))
+
